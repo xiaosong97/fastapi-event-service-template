@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     API_TOKEN: str | None = None
 
     model_config = SettingsConfigDict(
-        env_file=None if os.getenv("APP_ENV") == "test" else ".env",
+        env_file=".env",
         env_file_encoding="utf-8",
     )
 
@@ -42,7 +42,28 @@ class Settings(BaseSettings):
         # 默认 dev
         return f"sqlite:///{DATA_DIR / 'dev.db'}"
 
+# —— Settings 工厂层 —— #
 
 @lru_cache()
-def get_settings() -> Settings:
+def _get_settings_cached(app_env: str) -> Settings:
+    """
+    每个 APP_ENV 对应一份 Settings
+    """
+    if app_env == "test":
+        # test 环境：明确不加载 .env
+        return Settings(_env_file=None)
+
+    # dev / prod：允许 .env
     return Settings()
+
+
+def clear_settings_cache() -> None:
+    """
+    仅用于测试：清空 Settings 缓存
+    """
+    _get_settings_cached.cache_clear()
+
+
+def get_settings() -> Settings:
+    app_env = os.getenv("APP_ENV", "dev")
+    return _get_settings_cached(app_env)

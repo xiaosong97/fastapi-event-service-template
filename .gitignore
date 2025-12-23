@@ -10,5 +10,8 @@ venv/
 Thumbs.db
 # runtime data
 data/
+# pytest / coverage
+.coverage
+htmlcov/
 
 
