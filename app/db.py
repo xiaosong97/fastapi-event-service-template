@@ -1,8 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
-from app.settings import settings
+from app.settings import get_settings
 
 # 数据库基础设施层（engine / Session / Base / 初始化）
+
+settings = get_settings()
 
 
 class Base(DeclarativeBase):
