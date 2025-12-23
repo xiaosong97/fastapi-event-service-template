@@ -1,4 +1,5 @@
 from functools import lru_cache
+import os
 from pathlib import Path
 from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,7 +23,7 @@ class Settings(BaseSettings):
     API_TOKEN: str | None = None
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=None if os.getenv("APP_ENV") == "test" else ".env",
         env_file_encoding="utf-8",
     )
 

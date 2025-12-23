@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from app.settings import get_settings
 
@@ -11,10 +11,17 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_engine(
-    settings.DB_URL,
-    connect_args={"check_same_thread": False},
-)
+if settings.APP_ENV == "test":
+    engine = create_engine(
+        settings.DB_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+else:
+    engine = create_engine(
+        settings.DB_URL,
+        connect_args={"check_same_thread": False},
+    )
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
